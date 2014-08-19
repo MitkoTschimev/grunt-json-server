@@ -114,6 +114,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 [MIT License](LICENSE-MIT)
 
 ## Author
-*Mitko Tschimev*
-
-* [@tfiwm]
+*[Mitko Tschimev](https://github.com/tfiwm)*
