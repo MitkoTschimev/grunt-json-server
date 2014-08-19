@@ -25,24 +25,23 @@ module.exports = function (grunt) {
             port: 13337,
             hostname: '0.0.0.0',
             keepalive: true,
-            db: '',
-            protocol: "http"
+            db: ''
         });
 
         // Load source
         function load(source, port) {
-            console.log('Loading database from ' + source + '\n')
+            console.log('Loading database from ' + source + '\n');
 
             if (/\.json$/.test(source)) {
                 low.path = source;
                 low.db   = jsonServer.low.db = grunt.file.readJSON(source);
-                start(port)
+                start(port);
             }
 
             if (/\.js$/.test(source)) {
                 console.log(path.resolve(source));
                 low.db   = require(path.resolve(source)).run();
-                start(port)
+                start(port);
             }
 
             if (/^http/.test(source)) {
@@ -50,12 +49,12 @@ module.exports = function (grunt) {
                 .get(source)
                 .end(function(err, res) {
                     if (err) {
-                        console.error(err)
+                        console.error(err);
                     } else {
-                        low.db = JSON.parse(res.text)
-                        start(port)
+                        low.db = JSON.parse(res.text);
+                        start(port);
                     }
-                })
+                });
             }
         }
 
@@ -68,7 +67,7 @@ module.exports = function (grunt) {
             .listen(port, options.hostname)
             .on('listening', function() {
                 var hostname = options.hostname;
-                var target = options.protocol + '://' + hostname + ':' + port;
+                var target = 'http://' + hostname + ':' + port;
 
                 for (var prop in low.db) {
                     console.log(target + '/' + prop);

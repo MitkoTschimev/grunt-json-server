@@ -3,6 +3,8 @@
 > Give it a JSON or JS seed file and it will serve it through REST routes.
 
 ## Getting Started
+This plugin uses [JSON Server](https://github.com/typicode/json-server) to serve a REST api from a provided db file. For more information please go to [JSON Server](https://github.com/typicode/json-server).
+
 This plugin requires Grunt `~0.4.5`
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
@@ -37,53 +39,81 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.port
+Type: `Number`
+Default value: `13337`
+
+A number value that is used for the server port.
+
+#### options.hostname
 Type: `String`
-Default value: `',  '`
+Default value: `'0.0.0.0'`
 
-A string value that is used to do something with whatever.
+A string value that is used for the server address.
 
-#### options.punctuation
+#### options.db
 Type: `String`
-Default value: `'.'`
+Default value: `'db.json'`
 
-A string value that is used to do something else with whatever else.
+A string value that is the location to the db file which gets translated to restful routes 
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+In this example, the file db.json in the api folder gets parsed and translated to restful routes and starts a server on http://0.0.0.0:13337
 
 ```js
 grunt.initConfig({
-  json_server: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+    json_server: {
+        options: {
+            port: 13337,
+            hostname: '0.0.0.0',
+            db: 'api/db.json'
+        }
     },
-  },
 });
 ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
+### Usage with connect in grunt
+If you want to use it with the grunt connect plugin it is recommend to setup it with the concurrent plugin otherwise json_server will block everything
 ```js
 grunt.initConfig({
-  json_server: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
+    json_server: {
+        options: {
+            port: 13337,
+            hostname: '0.0.0.0',
+            db: 'api/db.json'
+        }
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
+    
+    // Run some tasks in parallel to speed up build process
+    concurrent: {
+        server: {
+            tasks: [
+                'json_server',
+                'watch'
+            ],
+            options: {
+                logConcurrentOutput: true
+            }
+        }
+    }
 });
+
+grunt.task.run([
+    'connect:livereload',
+    'concurrent:server'
+]);
 ```
+
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
-## Release History
-_(Nothing yet)_
+## License
+[MIT License](LICENSE-MIT)
+
+## Author
+*Mitko Tschimev*
+
+* [@tfiwm]
