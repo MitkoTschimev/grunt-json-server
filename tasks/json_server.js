@@ -27,37 +27,8 @@ module.exports = function (grunt) {
             keepalive: true,
             db: ''
         });
-
-        // Load source
-        function load(source, port) {
-            console.log('Loading database from ' + source + '\n');
-
-            if (/\.json$/.test(source)) {
-                low.path = source;
-                low.db   = jsonServer.low.db = grunt.file.readJSON(source);
-                start(port);
-            }
-
-            if (/\.js$/.test(source)) {
-                console.log(path.resolve(source));
-                low.db   = require(path.resolve(source)).run();
-                start(port);
-            }
-
-            if (/^http/.test(source)) {
-                request
-                .get(source)
-                .end(function(err, res) {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        low.db = JSON.parse(res.text);
-                        start(port);
-                    }
-                });
-            }
-        }
-
+        var source = options.db;
+        var port = options.port;
         var taskTarget = this.target;
         var keepAlive = this.flags.keepalive || options.keepalive;
 
@@ -70,7 +41,7 @@ module.exports = function (grunt) {
                 var target = 'http://' + hostname + ':' + port;
 
                 for (var prop in low.db) {
-                    console.log(target + '/' + prop);
+                    grunt.log.write(target + '/' + prop);
                 }
                 grunt.log.writeln('Started json rest server on ' + target);
                 grunt.config.set('json_server.' + taskTarget + '.options.hostname', hostname);
@@ -91,17 +62,40 @@ module.exports = function (grunt) {
             });
         }
 
+        grunt.log.write('Loading database from ' + source + '\n');
+
+        if (/\.json$/.test(source)) {
+            low.path = source;
+            low.db   = jsonServer.low.db = grunt.file.readJSON(source);
+            start(port);
+        }
+
+        if (/\.js$/.test(source)) {
+            grunt.log.write(path.resolve(source));
+            low.db   = require(path.resolve(source)).run();
+            start(port);
+        }
+
+        if (/^http/.test(source)) {
+            request
+            .get(source)
+            .end(function(err, res) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    low.db = JSON.parse(res.text);
+                    start(port);
+                }
+            });
+        }
+
         // So many people expect this task to keep alive that I'm adding an option
         // for it. Running the task explicitly as grunt:keepalive will override any
         // value stored in the config. Have fun, people.
         if (keepAlive) {
-            load(options.db, options.port);
-
             // This is now an async task. Since we don't call the "done"
             // function, this task will never, ever, ever terminate. Have fun!
             grunt.log.write('Waiting forever...\n');
-        } else {
-            done();
         }
     });
 
