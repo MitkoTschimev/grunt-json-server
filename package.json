@@ -40,7 +40,7 @@
     "routes"
   ],
   "dependencies": {
-      "json-server": "^0.3.11",
+      "json-server": "~0.5.5",
       "superagent": "^0.18.2"
   }
 }
