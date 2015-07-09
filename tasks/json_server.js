@@ -19,15 +19,19 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('json_server', 'Give it a JSON or JS seed file and it will serve it through REST routes.', function () {
         var done = this.async();
-        var server = jsonServer.create();         // Express server
-        server.use(jsonServer.defaults);          // Default middlewares (logger, public, cors)
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
             port: 13337,
             hostname: '0.0.0.0',
             keepalive: true,
+            logger: true,
             db: ''
         });
+        var server = jsonServer.create();         // Express server
+        if (!options.logger) {
+            delete jsonServer.defaults.shift();
+        }
+        server.use(jsonServer.defaults);          // Default middlewares (logger, public, cors)
         var source = options.db; //filename of json file containing the database, or Json object, or url of Json file
         var port = options.port;
         var taskTarget = this.target;
