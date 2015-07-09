@@ -19,7 +19,8 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('json_server', 'Give it a JSON or JS seed file and it will serve it through REST routes.', function () {
         var done = this.async();
-        var low = jsonServer.low;
+        var server = jsonServer.create();         // Express server
+        server.use(jsonServer.defaults);          // Default middlewares (logger, public, cors)
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
             port: 13337,
@@ -27,20 +28,22 @@ module.exports = function (grunt) {
             keepalive: true,
             db: ''
         });
-        var source = options.db;
+        var source = options.db; //filename of json file containing the database, or Json object, or url of Json file
         var port = options.port;
         var taskTarget = this.target;
         var keepAlive = this.flags.keepalive || options.keepalive;
 
         // Start server
-        function start(port) {
-            jsonServer
+        function start(router,port) {
+            server.use(router); //Express router
+            server
             .listen(port, options.hostname)
             .on('listening', function() {
                 var hostname = options.hostname;
                 var target = 'http://' + hostname + ':' + port;
 
-                for (var prop in low.db) {
+                //print list of entities contained in the database (i.e. name of first level objects
+                for (var prop in router.db.object) {
                     grunt.log.write(target + '/' + prop);
                 }
                 grunt.log.writeln('Started json rest server on ' + target);
@@ -65,16 +68,15 @@ module.exports = function (grunt) {
         grunt.log.write('Loading database from ' + source + '\n');
 
         if (/\.json$/.test(source)) {
-            low.path = source;
-            low.db   = jsonServer.low.db = grunt.file.readJSON(source);
-            start(port);
+            var router = jsonServer.router(source);
+            start(router,port);
         }
 
         if (/\.js$/.test(source)) {
             grunt.log.write(path.resolve(source));
-            low.db   = require(path.resolve(source)).run();
-            start(port);
-        }
+            var dbobject = require(path.resolve(source)).run();
+            var router = jsonServer.router(dbobject);
+            start(router,port);        }
 
         if (/^http/.test(source)) {
             request
@@ -83,8 +85,9 @@ module.exports = function (grunt) {
                 if (err) {
                     console.error(err);
                 } else {
-                    low.db = JSON.parse(res.text);
-                    start(port);
+                    var dbobject = JSON.parse(res.text);
+                    var router = jsonServer.router(dbobject);
+                    start(router, port);
                 }
             });
         }
