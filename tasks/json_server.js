@@ -29,9 +29,9 @@ module.exports = function (grunt) {
         });
         var server = jsonServer.create();         // Express server
         if (!options.logger) {
-            delete jsonServer.defaults.shift();
+            delete jsonServer.defaults().shift();
         }
-        server.use(jsonServer.defaults);          // Default middlewares (logger, public, cors)
+        server.use(jsonServer.defaults());          // Default middlewares (logger, public, cors)
         var source = options.db; //filename of json file containing the database, or Json object, or url of Json file
         var port = options.port;
         var taskTarget = this.target;
