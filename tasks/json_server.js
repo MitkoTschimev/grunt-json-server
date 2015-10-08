@@ -25,6 +25,7 @@ module.exports = function (grunt) {
             hostname: '0.0.0.0',
             keepalive: true,
             logger: true,
+            routes: undefined,
             db: ''
         });
         var server = jsonServer.create();         // Express server
@@ -70,6 +71,13 @@ module.exports = function (grunt) {
         }
 
         grunt.log.write('Loading database from ' + source + '\n');
+
+        if (options.routes) {
+            grunt.log.write('Loading additional routes from ' + options.routes + '\n');
+            var routesObject = require(path.resolve(options.routes));
+            var rewriter = jsonServer.rewriter(routesObject);
+            server.use(rewriter)
+        }
 
         if (/\.json$/.test(source)) {
             var router = jsonServer.router(source);
