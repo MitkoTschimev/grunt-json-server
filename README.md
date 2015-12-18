@@ -57,6 +57,12 @@ Default value: `'db.json'`
 
 A string value that is the location to the db file which gets translated to restful routes 
 
+#### options.routes
+Type: `String`
+Default value: `undefined`
+
+A string value that is the location to the routes JSON file which contains additional routes 
+
 ### Usage Examples
 
 #### Default Options
