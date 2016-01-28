@@ -17,7 +17,7 @@ module.exports = function (grunt) {
     // Please see the Grunt documentation for more information regarding task
     // creation: http://gruntjs.com/creating-tasks
 
-    grunt.registerMultiTask('json_server', 'Give it a JSON or JS seed file and it will serve it through REST routes.', function () {
+    grunt.registerTask('json_server', 'Give it a JSON or JS seed file and it will serve it through REST routes.', function () {
         var done = this.async();
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
