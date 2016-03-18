@@ -61,7 +61,13 @@ A string value that is the location to the db file which gets translated to rest
 Type: `String`
 Default value: `undefined`
 
-A string value that is the location to the routes JSON file which contains additional routes 
+A string value that is the location to the routes JSON file which contains additional routes
+ 
+#### options.customRoutes
+Type: `Object`
+Default value: `undefined`
+
+A key-value pairs of custom routes that should be applied to server. 
 
 ### Usage Examples
 
@@ -77,6 +83,29 @@ grunt.initConfig({
             db: 'api/db.json'
         }
     },
+});
+```
+
+#### Custom routes
+You can pass an object with configuration for custom routes
+ 
+```js
+grunt.initConfig({
+     json_server: {
+         options: {
+             port: 13337,
+             hostname: '0.0.0.0',
+             db: 'api/db.json',
+             customRoutes: {
+                 '/big_post': {
+                    method: 'get',
+                    handler: function(req, res) {
+                        return res.json({id: 1, title: 'Big post'});
+                    }
+                 }
+             }        
+         }
+     }
 });
 ```
 
