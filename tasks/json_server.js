@@ -12,6 +12,7 @@ module.exports = function (grunt) {
 
     var jsonServer = require('json-server'),
         request  = require('superagent'),
+        bodyParser = require('body-parser'),
         path = require('path');
 
     // Please see the Grunt documentation for more information regarding task
@@ -26,9 +27,14 @@ module.exports = function (grunt) {
             keepalive: true,
             logger: true,
             routes: undefined,
+            customRoutes: undefined,
             db: ''
         });
         var server = jsonServer.create();         // Express server
+
+        server.use(bodyParser.json());
+        server.use(bodyParser.urlencoded({ extended: true }));
+
         if (!options.logger) {
             delete jsonServer.defaults().shift();
         }
@@ -76,7 +82,14 @@ module.exports = function (grunt) {
             grunt.log.write('Loading additional routes from ' + options.routes + '\n');
             var routesObject = require(path.resolve(options.routes));
             var rewriter = jsonServer.rewriter(routesObject);
-            server.use(rewriter)
+            server.use(rewriter);
+        }
+
+        if (options.customRoutes) {
+            for(var customPath in options.customRoutes) {
+                var customRoute = options.customRoutes[customPath];
+                server[customRoute.method.toLocaleLowerCase()](customPath, customRoute.handler);
+            }
         }
 
         if (/\.json$/.test(source)) {
