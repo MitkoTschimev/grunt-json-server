@@ -28,6 +28,9 @@ module.exports = function (grunt) {
             logger: true,
             routes: undefined,
             customRoutes: undefined,
+            noGzip: false,
+            noCors: false,
+            readOnly: false,
             db: ''
         });
         var server = jsonServer.create();         // Express server
@@ -38,7 +41,7 @@ module.exports = function (grunt) {
         if (!options.logger) {
             delete jsonServer.defaults().shift();
         }
-        server.use(jsonServer.defaults());          // Default middlewares (logger, public, cors)
+        server.use(jsonServer.defaults(options));          // Default middlewares (logger, public, cors)
         var source = options.db; //filename of json file containing the database, or Json object, or url of Json file
         var port = options.port;
         var taskTarget = this.target;
@@ -90,6 +93,22 @@ module.exports = function (grunt) {
                 var customRoute = options.customRoutes[customPath];
                 server[customRoute.method.toLocaleLowerCase()](customPath, customRoute.handler);
             }
+        }
+
+        if (options.readOnly) {
+            grunt.log.writeln('Allowing only GET requests');
+        }
+
+        if (options.noGzip) {
+            grunt.log.writeln('GZip Content-Encoding disabled');
+        }
+
+        if (options.noCors) {
+            grunt.log.writeln('Cross-Origin Resource Sharing disabled');
+        }
+
+        if (options.static) {
+            grunt.log.writeln('Serving static files on \'' + options.static + '\'');
         }
 
         if (/\.json$/.test(source)) {

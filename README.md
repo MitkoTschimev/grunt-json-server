@@ -55,19 +55,43 @@ A string value that is used for the server address.
 Type: `String`
 Default value: `'db.json'`
 
-A string value that is the location to the db file which gets translated to restful routes 
+A string value that is the location to the db file which gets translated to restful routes
 
 #### options.routes
 Type: `String`
 Default value: `undefined`
 
 A string value that is the location to the routes JSON file which contains additional routes
- 
+
 #### options.customRoutes
 Type: `Object`
 Default value: `undefined`
 
-A key-value pairs of custom routes that should be applied to server. 
+A key-value pairs of custom routes that should be applied to server.
+
+#### options.readOnly
+Type: `Boolean`
+Default value: `false`
+
+Allow only GET requests. Any other method returns 403 (Forbidden).
+
+#### options.noGzip
+Type: `Boolean`
+Default value: `false`
+
+Disable GZIP Content-Encoding.
+
+#### options.noCors
+Type: `Boolean`
+Default value: `false`
+
+Disable Cross-Origin Resource Sharing.
+
+#### options.static
+Type: `String`
+Default value: `undefined`
+
+Set static files directory.
 
 ### Usage Examples
 
@@ -88,7 +112,7 @@ grunt.initConfig({
 
 #### Custom routes
 You can pass an object with configuration for custom routes
- 
+
 ```js
 grunt.initConfig({
      json_server: {
@@ -120,7 +144,7 @@ grunt.initConfig({
             db: 'api/db.json'
         }
     },
-    
+
     // Run some tasks in parallel to speed up build process
     concurrent: {
         server: {
